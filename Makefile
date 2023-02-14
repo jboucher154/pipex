@@ -6,7 +6,7 @@
 #    By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/07 15:33:41 by jebouche          #+#    #+#              #
-#    Updated: 2023/02/13 10:27:48 by jebouche         ###   ########.fr        #
+#    Updated: 2023/02/14 10:11:45 by jebouche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,10 +31,10 @@ DEBUG_SANI = -g -fsanitize=address
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIB)
-	@$(CC) $(CFLAGS) $(OBJS) $(LIB) -o $(NAME)
+	@$(CC) $(CFLAGS) $(DEBUG) $(OBJS) $(LIB) -o $(NAME)
 
 %.o : %.c $(DEPS)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) $(DEBUG) -c $< -o $@
 
 $(LIB):
 	@$(MAKE) -C libft
