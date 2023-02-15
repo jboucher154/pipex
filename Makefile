@@ -6,7 +6,7 @@
 #    By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/07 15:33:41 by jebouche          #+#    #+#              #
-#    Updated: 2023/02/14 10:11:45 by jebouche         ###   ########.fr        #
+#    Updated: 2023/02/15 12:50:43 by jebouche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = pipex
 
 LIB = libft/libft.a
 
-SRCS = main.c test.c
+SRCS = main.c pathfinding.c children.c cleanup.c test.c
 
 OBJS = $(SRCS:.c=.o)
 
