@@ -3,3 +3,5 @@
 *.o
 infile
 outfile
+special_tx.c
+awkward.c

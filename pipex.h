@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/15 12:51:55 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/16 13:33:32 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ typedef struct s_pipex
 char	*find_correct_path(char *fname, char **paths);
 char	**get_paths(char **envp);
 
+char **this_is_awkward(char *commands);
+
 void	cleanup_pipex(t_pipex *pipex, char *error_msg, int exit_code);
+void	free_array(char **to_free);
 
 void	firstborn(t_pipex *pipex);
 void	baby(t_pipex *pipex);

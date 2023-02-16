@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/15 12:53:26 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/16 14:14:50 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,29 @@
 #include "libft.h"
 #include "ft_printf.h"
 
+char **this_is_awkward(char *commands)
+{
+	char **awk_args;
+	char **args;
+
+	awk_args = (char **)malloc(sizeof(char *) * 3);
+	args = ft_split(commands, '\'');
+	if (awk_args && args && args[0] && args[1])
+	{
+		awk_args[2] = NULL;
+		awk_args[0] = ft_strtrim(args[0], " ");
+		awk_args[1] = ft_strdup(args[1]);
+	}
+	free_array(args);
+	return (awk_args);
+}
+
 char	**get_args(char *commands)
 {
 	char	**args;
 
 	if (ft_strchr(commands, '\''))
-	{
-		args = ft_split(commands, '\'');
-		if (args)
-		{
-			args[0] = ft_strtrim(args[0], " "); // will leave memory leak?
-		}
-		for (int i = 0; args[i]; i++)
-			ft_printf("args[%d]: %s\n", i, args[i]);
-	}
-	else if (ft_strchr(commands, '\"'))
-		args = ft_split(commands, '\"');
+		args = this_is_awkward(commands);
 	else
 		args = ft_split(commands, ' ');
 	return (args);
@@ -39,7 +46,7 @@ char	**get_args(char *commands)
 void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 {
 	ft_bzero(pipex, sizeof(t_pipex));
-	int pipe_ret = pipe(pipex->p); //create pipe
+	int pipe_ret = pipe(pipex->p);
 	if (pipe_ret == -1)
 	{
 		perror("Pipe");
@@ -48,7 +55,7 @@ void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 	pipex->infile_fd = open(argv[1], O_RDONLY);
 	if (pipex->infile_fd == -1)
 	{
-		perror("Infile");
+		perror(argv[1]);
 		exit(1);
 	}
 	pipex->outfile_fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -60,8 +67,6 @@ void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 	pipex->paths = get_paths(envp);
 	pipex->cmd1 = get_args(argv[2]);
 	pipex->cmd2 = get_args(argv[3]);
-	// pipex->cmd1 = ft_split(argv[2], ' ');
-	// pipex->cmd2 = ft_split(argv[3], ' ');
 	if (!pipex->cmd1 || !pipex->cmd2 || !pipex->paths)
 		cleanup_pipex(pipex, "Split", 4);
 }
@@ -72,7 +77,7 @@ int	main(int argc, char **argv, char **envp)
 	int		pid;
 	int		pid2;
 
-	if (argc == 5)
+	if (argc > 1) //argc == 5
 		setup_pipex(&pipex, argv, envp);
 	else
 		exit(1);
@@ -95,4 +100,3 @@ int	main(int argc, char **argv, char **envp)
 	cleanup_pipex(&pipex, "Sucess", 0);
 	return (0);
 }
-	// run_test(argc, argv, envp);
