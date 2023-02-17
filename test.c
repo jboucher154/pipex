@@ -93,38 +93,36 @@
 // 		}
 // }
 
-// void	run_test(int argc, char **argv, char **envp)
-// {
-// 	t_pipex	pipex;
-
-// 	if (argc == 5)
-// 		setup_pipex(&pipex, argv, envp);
-// 	else
-// 		exit(1);
-// 		int pid = fork();
-// 		if (pid == 0)
-// 			firstborn(&pipex);
-// 		else
-// 			wait(NULL); //wait for child to finish
-// 		int pid2 = fork();
-// 		if (pid2 == 0)
-// 		{
-// 			sibling(&pipex);
-// 		}
-// 		else
-// 		{
-// 			close(pipex.p[1]); //close write end of pipe
-// 			wait(NULL); //wait for child to finish
-// 		}
-// 	// char *line;
-// 	// while ((line = get_next_line(pipex.p[0])))
-// 	// {
-// 	// 	ft_printf("%s", line);
-// 	// 	free(line);
-// 	// }
-// 	close(pipex.p[0]);
-// 	cleanup_pipex(&pipex);
-// }
+int	run_test(int argc, char **argv, char **envp)
+{
+	argc = 0;
+	argv = NULL;
+	envp = NULL;
+	int	exit_status;
+	
+	int	pid = fork();
+	if (pid == -1)
+	{
+		perror("Fork");
+		exit(1);
+	}
+	if (pid == 0)
+	{
+		printf("Child\n");
+		exit(0);
+	}
+	else
+	{
+		waitpid(pid, &exit_status, 0);
+		if (exit_status)
+		{
+			exit(1);
+		}
+		printf("Parent\n");
+		exit (0);
+	}
+	return (0);
+}
 
 		// int pipe_ret = pipe(pipex.p); //create pipe
 		// if (pipe_ret == -1)
