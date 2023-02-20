@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/20 17:48:16 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/20 18:34:29 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,8 @@ int	continue_parent(t_pipex *pipex, int pid)
 	else
 	{
 		pid2 = fork();
+		if (pid2 < 0)
+			cleanup_pipex_parent(&pipex, "error while forking", 3);
 		if (pid2 == 0)
 			baby(pipex);
 		else
@@ -99,19 +101,14 @@ int	main(int argc, char **argv, char **envp)
 	if (argc == 5)
 		setup_pipex(&pipex, argv, envp);
 	else
-	{
-		ft_putendl_fd("Error: too few arguments", 2);
-		exit(1);
-	}
+		setup_exit("Error: too few arguments", 1);
 	pid = fork();
 	if (pid < 0)
 		cleanup_pipex_parent(&pipex, "error while forking", 3);
 	if (pid == 0)
 		firstborn(&pipex);
 	else
-	{
 		exit_status = continue_parent(&pipex, pid);
-	}
 	cleanup_pipex_parent(&pipex, "Sucess", exit_status);
 	return (0);
 }
