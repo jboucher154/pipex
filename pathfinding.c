@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 09:24:45 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/15 09:37:46 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/20 17:50:40 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char	*find_correct_path(char *fname, char **paths)
 	char	*path;
 	char	*slash_fname;
 
-	i  = 0;
+	i = 0;
 	slash_fname = ft_strjoin("/", fname);
 	while (paths[i] && slash_fname)
 	{

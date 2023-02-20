@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/17 14:37:23 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/20 17:40:11 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,19 @@
 
 typedef struct s_pipex
 {
-	char	**cmd1; //array of commands, use [0] to find correct path
+	char	**cmd1;
 	char	**cmd2;
 	char	**envp;
-	char	**paths; //array of paths, use to find correct one for cmd1 and cmd2
+	char	**paths;
 	int		infile_fd;
 	int		outfile_fd;
-	int		p[2]; //pipe
+	int		p[2];
 }			t_pipex;
 
 char	*find_correct_path(char *fname, char **paths);
 char	**get_paths(char **envp);
 
-char 	**this_is_awkward(char *commands);
-
+void	setup_exit(char *msg, int exit_code);
 void	cleanup_pipex_child(t_pipex *pipex, char *error_msg, int exit_code);
 void	cleanup_pipex_parent(t_pipex *pipex, char *error_msg, int exit_code);
 void	free_array(char **to_free);
@@ -43,6 +42,6 @@ void	firstborn(t_pipex *pipex);
 void	baby(t_pipex *pipex);
 
 //for testing
-int	run_test(int argc, char **argv, char **envp);
+int		run_test(int argc, char **argv, char **envp);
 
 #endif
