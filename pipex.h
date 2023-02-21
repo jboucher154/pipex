@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 16:32:40 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/21 17:35:57 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,26 @@
 # include <stdlib.h> // for exit
 # include <sys/wait.h> // for waitpid, wait
 
+typedef struct s_command_data
+{
+	char	**cmd;
+	char	*path;
+	int		read_from;
+	int		write_to;
+	int		to_close;
+
+}			t_command_data;
+
 typedef struct s_pipex
 {
-	char	**cmd1; //array of commands, use [0] to find correct path
-	char	**cmd2;
-	char	**envp;
-	char	**paths; //array of paths, use to find correct one for cmd1 and cmd2
-	int		infile_fd;
-	int		outfile_fd;
+	struct s_command_data	*cmd_1;
+	struct s_command_data	*cmd_2;
+	// char	**cmd1; //array of commands, use [0] to find correct path
+	// char	**cmd2;
+	// char	**envp;
+	// char	**paths; //array of paths, use to find correct one for cmd1 and cmd2
+	// int		infile_fd;
+	// int		outfile_fd;
 	int		p[2]; //pipe
 }			t_pipex;
 
@@ -41,8 +53,10 @@ void	cleanup_pipex_parent(t_pipex *pipex, int exit_code);
 void	exit_setup(char *error_msg, char *error_msg1, int exit_code);
 void	free_array(char **to_free);
 
-void	firstborn(t_pipex *pipex);
-void	baby(t_pipex *pipex);
+void	pipe_child(t_command_data *cmd, char **envp);
+
+// void	firstborn(t_pipex *pipex);
+// void	baby(t_pipex *pipex);
 
 //for testing
 int	run_test(int argc, char **argv, char **envp);

@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:01 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 16:32:15 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/21 17:58:24 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,16 @@ void	cleanup_pipex_parent(t_pipex *pipex, int exit_code)
 		ft_putstr_fd("pipex: ", 2);
 		ft_putendl_fd(msg, 2);
 	}
-	if (pipex->cmd1)
-		free_array(pipex->cmd1);
-	if (pipex->cmd2)
-		free_array(pipex->cmd2);
-	if (pipex->paths)
-		free_array(pipex->paths);
-	close(pipex->infile_fd);
-	close(pipex->outfile_fd);
+	if (pipex->cmd_1->cmd)
+		free_array(pipex->cmd_1->cmd);
+	if (pipex->cmd_1->path)
+		free(pipex->cmd_1->path);
+	if (pipex->cmd_2->cmd)
+		free_array(pipex->cmd_2->cmd);
+	if (pipex->cmd_2->path)
+		free(pipex->cmd_2->path);
+	// close(pipex->infile_fd);
+	// close(pipex->outfile_fd);
 	close(pipex->p[0]);
 	close(pipex->p[1]);
 	exit(exit_code);
@@ -66,5 +68,6 @@ void	exit_setup(char *error_msg, char *error_msg1, int exit_code)
 	if (error_msg)
 		ft_putstr_fd(error_msg, 2);
 	ft_putendl_fd(error_msg1, 2);
-	exit(exit_code);
+	if (exit_code) //pass 0 to not exit
+		exit(exit_code);
 }

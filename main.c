@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 16:33:12 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/21 18:11:40 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,27 +46,50 @@ char	**get_args(char *commands)
 	return (args);
 }
 
+void	setup_commands(t_pipex *pipex, char **paths)
+{
+	if (pipex->cmd_1->cmd != NULL)
+		pipex->cmd_1->path = find_correct_path(pipex->cmd_1->cmd[0], paths);
+	// if (pipex->cmd_1->read_from < 0)
+	// 	ft_putchar_fd('\0', 0);
+	pipex->cmd_1->write_to = pipex->p[1];
+	pipex->cmd_1->to_close = pipex->p[0];
+	if (pipex->cmd_2->cmd != NULL)
+		pipex->cmd_2->path = find_correct_path(pipex->cmd_2->cmd[0], paths);
+	if (pipex->cmd_1->cmd == NULL)
+		pipex->cmd_2->read_from = pipex->cmd_1->read_from;
+	else
+		pipex->cmd_2->read_from = pipex->p[0];
+	pipex->cmd_2->to_close = pipex->p[1];
+}
+
 void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 {
-	int	pipe_ret;
+	int		pipe_ret;
+	char	**paths;
 
-	ft_bzero(pipex, sizeof(t_pipex));
+	pipex->cmd_1 = ft_calloc(1, sizeof(t_command_data));
+	pipex->cmd_2 = ft_calloc(1, sizeof(t_command_data));
+	if (!pipex->cmd_1 || !pipex->cmd_2)
+		cleanup_pipex_parent(pipex, ENOMEM);
 	pipe_ret = pipe(pipex->p);
 	if (pipe_ret == -1)
-		exit_setup("error", "pipe creation", 2);
-	pipex->infile_fd = open(argv[1], O_RDONLY);
-	if (pipex->infile_fd == -1)
-		exit_setup("no such file or directory: ", argv[1], 3);
-	pipex->outfile_fd = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
-	if (pipex->outfile_fd == -1)
+		exit_setup("error", "pipe creation failed", 2);
+	pipex->cmd_1->read_from = open(argv[1], O_RDONLY);
+	if (pipex->cmd_1->read_from == -1)
+		exit_setup("no such file or directory: ", argv[1], 0);
+	pipex->cmd_2->write_to = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
+	if (pipex->cmd_2->write_to == -1)
 		exit_setup("no such file or directory: ", argv[4], 4);
-	pipex->paths = get_paths(envp);
-	pipex->cmd1 = get_args(argv[2]);
-	pipex->cmd2 = get_args(argv[3]);
-	if (!pipex->cmd1 || !pipex->cmd2)
-		cleanup_pipex_parent(pipex, EINVAL);
-	if (!pipex->paths)
+	paths = get_paths(envp);
+	pipex->cmd_1->cmd = get_args(argv[2]);//
+	pipex->cmd_2->cmd = get_args(argv[3]);//
+	// if (!pipex->cmd1 || !pipex->cmd2)
+	// 	cleanup_pipex_parent(pipex, EINVAL);
+	if (!paths)
 		cleanup_pipex_parent(pipex, ENOMEM);
+	setup_commands(pipex, paths);
+	free_array(paths);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -81,15 +104,46 @@ int	main(int argc, char **argv, char **envp)
 	pid2 = 0;
 	pid = fork();
 	if (pid == 0)
-		firstborn(&pipex);
+		pipe_child(pipex.cmd_1, envp);
 	else
 	{
 		pid2 = fork();
 		if (pid2 == 0)
-			baby(&pipex);
+			pipe_child(pipex.cmd_2, envp);
+		else
+		{
+			close(pipex.p[0]);
+			close(pipex.p[1]);
+		}
 	}
 	waitpid(pid, NULL, 0);
 	waitpid(pid2, NULL, 0);
 	cleanup_pipex_parent(&pipex, 0);
 	return (0);
 }
+
+
+
+
+// void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
+// {
+// 	int	pipe_ret;
+
+// 	ft_bzero(pipex, sizeof(t_pipex));
+// 	pipe_ret = pipe(pipex->p);
+// 	if (pipe_ret == -1)
+// 		exit_setup("error", "pipe creation failed", 2);
+// 	pipex->infile_fd = open(argv[1], O_RDONLY);
+// 	if (pipex->infile_fd == -1)
+// 		exit_setup("no such file or directory: ", argv[1], 0);
+// 	pipex->outfile_fd = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
+// 	if (pipex->outfile_fd == -1)
+// 		exit_setup("no such file or directory: ", argv[4], 4);
+// 	pipex->paths = get_paths(envp);
+// 	pipex->cmd1 = get_args(argv[2]);
+// 	pipex->cmd2 = get_args(argv[3]);
+// 	if (!pipex->cmd1 || !pipex->cmd2)
+// 		cleanup_pipex_parent(pipex, EINVAL);
+// 	if (!pipex->paths)
+// 		cleanup_pipex_parent(pipex, ENOMEM);
+// }
