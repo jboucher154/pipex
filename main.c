@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/17 16:56:29 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/21 11:26:32 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,25 +48,18 @@ char	**get_args(char *commands)
 
 void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 {
+	int	pipe_ret;
+
 	ft_bzero(pipex, sizeof(t_pipex));
-	int pipe_ret = pipe(pipex->p);
+	pipe_ret = pipe(pipex->p);
 	if (pipe_ret == -1)
-	{
-		perror("Pipe creation");
-		exit(2);
-	}
+		exit_setup("Pipe creation", 2);
 	pipex->infile_fd = open(argv[1], O_RDONLY);
 	if (pipex->infile_fd == -1)
-	{
-		perror(argv[1]);
-		exit(3);
-	}
-	pipex->outfile_fd = open(argv[4],  O_TRUNC | O_CREAT | O_WRONLY , 0644);
+		exit_setup(argv[1], 3);
+	pipex->outfile_fd = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
 	if (pipex->outfile_fd == -1)
-	{
-		perror(argv[4]);
-		exit(4);
-	}
+		exit_setup(argv[4], 4);
 	pipex->paths = get_paths(envp);
 	pipex->cmd1 = get_args(argv[2]);
 	pipex->cmd2 = get_args(argv[3]);
@@ -83,19 +76,17 @@ int	main(int argc, char **argv, char **envp)
 	int		pid2;
 	int		exit_status;
 
-	int fd = open("/dev/urandom", O_RDONLY);
-	ft_printf("OPEN res: %i", fd);
 	exit_status = 0;
-	if (argc == 5) //argc == 5
+	if (argc == 5)
 		setup_pipex(&pipex, argv, envp);
 	else
-		exit(1); //5 is input output error
+		exit(1);
 	pid = fork();
 	if (pid == 0)
 		firstborn(&pipex);
 	else
 	{
-		waitpid(pid, &exit_status, 0); //wait for child to finish
+		waitpid(pid, &exit_status, 0);
 		if (exit_status)
 			cleanup_pipex_parent(&pipex, "Wait", exit_status);
 		else
