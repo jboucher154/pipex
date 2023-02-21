@@ -6,7 +6,7 @@
 #    By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/07 15:33:41 by jebouche          #+#    #+#              #
-#    Updated: 2023/02/16 13:53:54 by jebouche         ###   ########.fr        #
+#    Updated: 2023/02/21 15:51:21 by jebouche         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ CC = cc
 
 CFLAGS = -Wall -Wextra -Werror -I. -Ilibft/includes
 
-DEBUG = -g
+DEBUG = -g3
 
 DEBUG_SANI = -g -fsanitize=address
 

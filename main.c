@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 11:26:32 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/21 16:33:12 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include "ft_printf.h"
 #include <errno.h>
 
-char **this_is_awkward(char *commands)
+char	**this_is_awkward(char *commands)
 {
-	char **awk_args;
-	char **args;
+	char	**awk_args;
+	char	**args;
 
 	awk_args = (char **)malloc(sizeof(char *) * 3);
 	args = ft_split(commands, '\'');
@@ -53,20 +53,20 @@ void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 	ft_bzero(pipex, sizeof(t_pipex));
 	pipe_ret = pipe(pipex->p);
 	if (pipe_ret == -1)
-		exit_setup("Pipe creation", 2);
+		exit_setup("error", "pipe creation", 2);
 	pipex->infile_fd = open(argv[1], O_RDONLY);
 	if (pipex->infile_fd == -1)
-		exit_setup(argv[1], 3);
+		exit_setup("no such file or directory: ", argv[1], 3);
 	pipex->outfile_fd = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
 	if (pipex->outfile_fd == -1)
-		exit_setup(argv[4], 4);
+		exit_setup("no such file or directory: ", argv[4], 4);
 	pipex->paths = get_paths(envp);
 	pipex->cmd1 = get_args(argv[2]);
 	pipex->cmd2 = get_args(argv[3]);
 	if (!pipex->cmd1 || !pipex->cmd2)
-		cleanup_pipex_parent(pipex, "Split", EINVAL);
+		cleanup_pipex_parent(pipex, EINVAL);
 	if (!pipex->paths)
-		cleanup_pipex_parent(pipex, "Split", ENOMEM);
+		cleanup_pipex_parent(pipex, ENOMEM);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -74,34 +74,22 @@ int	main(int argc, char **argv, char **envp)
 	t_pipex	pipex;
 	int		pid;
 	int		pid2;
-	int		exit_status;
 
-	exit_status = 0;
-	if (argc == 5)
-		setup_pipex(&pipex, argv, envp);
-	else
-		exit(1);
+	if (argc < 5 || argc > 5)
+		exit_setup(NULL, "invalid number of arguments", 1);
+	setup_pipex(&pipex, argv, envp);
+	pid2 = 0;
 	pid = fork();
 	if (pid == 0)
 		firstborn(&pipex);
 	else
 	{
-		waitpid(pid, &exit_status, 0);
-		if (exit_status)
-			cleanup_pipex_parent(&pipex, "Wait", exit_status);
-		else
-		{
-			pid2 = fork();
-			if (pid2 == 0)
-				baby(&pipex);
-			else
-			{
-				close(pipex.p[1]); //close write end of pipe
-				waitpid(pid2, &exit_status, 0); //wait for child to finish
-			}
-		}
+		pid2 = fork();
+		if (pid2 == 0)
+			baby(&pipex);
 	}
-	close(pipex.p[0]);
-	cleanup_pipex_parent(&pipex, "Sucess", 0);
+	waitpid(pid, NULL, 0);
+	waitpid(pid2, NULL, 0);
+	cleanup_pipex_parent(&pipex, 0);
 	return (0);
 }
