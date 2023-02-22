@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:45 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 18:11:41 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/22 17:27:07 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,35 @@ void	pipe_child(t_command_data *cmd, char **envp)
 {
 	int		ret;
 
-	if (cmd->path == NULL)
-		exit_child("command not found: ", cmd->cmd[0], 3);
+
 	if (cmd->read_from < 0)
 		write(STDIN_FILENO, "\0", 1);
 	else
 		dup2(cmd->read_from, STDIN_FILENO);
 	dup2(cmd->write_to, STDOUT_FILENO);
 	close(cmd->to_close);
+	if (cmd->path == NULL)
+	{
+		ft_putendl_fd("child exit", 2);//
+		exit_child("command not found: ", cmd->cmd[0], 3);
+	}
 	ret = execve(cmd->path, cmd->cmd, envp);
 	if (ret == -1)
-		exit_child("exeve failed: ", cmd->cmd[0], errno); //process failed
+		exit_child("exeve failed: ", cmd->cmd[0], errno);
 }
+
+//printing for errors is not occuring...
+void	exit_child(char *error_msg, char *arg, int exit_code)
+{
+	ft_putendl_fd("child exit", 2);//
+	ft_putstr_fd("pipex: ", 2);
+	ft_putstr_fd(error_msg, 2);
+	ft_putendl_fd(arg, 2);
+	// if (exit_code)
+	exit(exit_code);
+}
+
+//make function that copies infile to outfile...
 
 // void	baby(t_pipex *pipex)
 // {
