@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 18:11:40 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/22 16:21:05 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,18 @@ void	setup_commands(t_pipex *pipex, char **paths)
 {
 	if (pipex->cmd_1->cmd != NULL)
 		pipex->cmd_1->path = find_correct_path(pipex->cmd_1->cmd[0], paths);
-	// if (pipex->cmd_1->read_from < 0)
-	// 	ft_putchar_fd('\0', 0);
+	// if (pipex->cmd_1->path == NULL)
+	// 	pipex->cmd_1->path = find_correct_path("cat", paths);
 	pipex->cmd_1->write_to = pipex->p[1];
 	pipex->cmd_1->to_close = pipex->p[0];
+	//cmd 2 stuff
 	if (pipex->cmd_2->cmd != NULL)
 		pipex->cmd_2->path = find_correct_path(pipex->cmd_2->cmd[0], paths);
+	else
+	{
+		pipex->cmd_2->cmd = ft_split("cat", ' ');
+		pipex->cmd_2->path = find_correct_path("cat", paths);
+	}
 	if (pipex->cmd_1->cmd == NULL)
 		pipex->cmd_2->read_from = pipex->cmd_1->read_from;
 	else
@@ -74,7 +80,7 @@ void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 		cleanup_pipex_parent(pipex, ENOMEM);
 	pipe_ret = pipe(pipex->p);
 	if (pipe_ret == -1)
-		exit_setup("error", "pipe creation failed", 2);
+		exit_setup("error", "pipe creation failed", EPIPE);
 	pipex->cmd_1->read_from = open(argv[1], O_RDONLY);
 	if (pipex->cmd_1->read_from == -1)
 		exit_setup("no such file or directory: ", argv[1], 0);
@@ -147,3 +153,15 @@ int	main(int argc, char **argv, char **envp)
 // 	if (!pipex->paths)
 // 		cleanup_pipex_parent(pipex, ENOMEM);
 // }
+
+		// char	*str;
+
+		// while ((str = get_next_line(pipex.p[0])))
+		// {
+		// 	ft_printf("str: %s", str);
+		// 	free(str);
+		// }
+
+		// char	*str = get_next_line(pipex.p[0]);
+		// ft_printf("str: %s", str);
+		// free(str);
