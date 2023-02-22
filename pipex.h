@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/21 17:35:57 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/22 16:08:19 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,8 @@ typedef struct s_pipex
 {
 	struct s_command_data	*cmd_1;
 	struct s_command_data	*cmd_2;
-	// char	**cmd1; //array of commands, use [0] to find correct path
-	// char	**cmd2;
-	// char	**envp;
-	// char	**paths; //array of paths, use to find correct one for cmd1 and cmd2
-	// int		infile_fd;
-	// int		outfile_fd;
-	int		p[2]; //pipe
-}			t_pipex;
+	int						p[2];
+}				t_pipex;
 
 char	*find_correct_path(char *fname, char **paths);
 char	**get_paths(char **envp);
@@ -59,6 +53,6 @@ void	pipe_child(t_command_data *cmd, char **envp);
 // void	baby(t_pipex *pipex);
 
 //for testing
-int	run_test(int argc, char **argv, char **envp);
+int		run_test(int argc, char **argv, char **envp);
 
 #endif
