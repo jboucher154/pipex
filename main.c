@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/22 16:21:05 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/23 17:51:13 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,10 @@ void	setup_commands(t_pipex *pipex, char **paths)
 {
 	if (pipex->cmd_1->cmd != NULL)
 		pipex->cmd_1->path = find_correct_path(pipex->cmd_1->cmd[0], paths);
-	// if (pipex->cmd_1->path == NULL)
-	// 	pipex->cmd_1->path = find_correct_path("cat", paths);
 	pipex->cmd_1->write_to = pipex->p[1];
 	pipex->cmd_1->to_close = pipex->p[0];
-	//cmd 2 stuff
 	if (pipex->cmd_2->cmd != NULL)
 		pipex->cmd_2->path = find_correct_path(pipex->cmd_2->cmd[0], paths);
-	else
-	{
-		pipex->cmd_2->cmd = ft_split("cat", ' ');
-		pipex->cmd_2->path = find_correct_path("cat", paths);
-	}
 	if (pipex->cmd_1->cmd == NULL)
 		pipex->cmd_2->read_from = pipex->cmd_1->read_from;
 	else
@@ -88,10 +80,10 @@ void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 	if (pipex->cmd_2->write_to == -1)
 		exit_setup("no such file or directory: ", argv[4], 4);
 	paths = get_paths(envp);
-	pipex->cmd_1->cmd = get_args(argv[2]);//
-	pipex->cmd_2->cmd = get_args(argv[3]);//
-	// if (!pipex->cmd1 || !pipex->cmd2)
-	// 	cleanup_pipex_parent(pipex, EINVAL);
+	pipex->cmd_1->cmd = get_args(argv[2]);
+	pipex->cmd_2->cmd = get_args(argv[3]);
+	if (!pipex->cmd_1->cmd || !pipex->cmd_2->cmd)
+		cleanup_pipex_parent(pipex, EINVAL); // invalid argument
 	if (!paths)
 		cleanup_pipex_parent(pipex, ENOMEM);
 	setup_commands(pipex, paths);
@@ -117,51 +109,10 @@ int	main(int argc, char **argv, char **envp)
 		if (pid2 == 0)
 			pipe_child(pipex.cmd_2, envp);
 		else
-		{
-			close(pipex.p[0]);
-			close(pipex.p[1]);
-		}
+			close_pipes(pipex.p[0], pipex.p[1]);
 	}
 	waitpid(pid, NULL, 0);
 	waitpid(pid2, NULL, 0);
 	cleanup_pipex_parent(&pipex, 0);
 	return (0);
 }
-
-
-
-
-// void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
-// {
-// 	int	pipe_ret;
-
-// 	ft_bzero(pipex, sizeof(t_pipex));
-// 	pipe_ret = pipe(pipex->p);
-// 	if (pipe_ret == -1)
-// 		exit_setup("error", "pipe creation failed", 2);
-// 	pipex->infile_fd = open(argv[1], O_RDONLY);
-// 	if (pipex->infile_fd == -1)
-// 		exit_setup("no such file or directory: ", argv[1], 0);
-// 	pipex->outfile_fd = open(argv[4], O_TRUNC | O_CREAT | O_WRONLY, 0644);
-// 	if (pipex->outfile_fd == -1)
-// 		exit_setup("no such file or directory: ", argv[4], 4);
-// 	pipex->paths = get_paths(envp);
-// 	pipex->cmd1 = get_args(argv[2]);
-// 	pipex->cmd2 = get_args(argv[3]);
-// 	if (!pipex->cmd1 || !pipex->cmd2)
-// 		cleanup_pipex_parent(pipex, EINVAL);
-// 	if (!pipex->paths)
-// 		cleanup_pipex_parent(pipex, ENOMEM);
-// }
-
-		// char	*str;
-
-		// while ((str = get_next_line(pipex.p[0])))
-		// {
-		// 	ft_printf("str: %s", str);
-		// 	free(str);
-		// }
-
-		// char	*str = get_next_line(pipex.p[0]);
-		// ft_printf("str: %s", str);
-		// free(str);
