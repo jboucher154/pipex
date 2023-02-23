@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/22 16:08:19 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/23 17:24:44 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,20 +39,12 @@ typedef struct s_pipex
 char	*find_correct_path(char *fname, char **paths);
 char	**get_paths(char **envp);
 
-char	**this_is_awkward(char *commands);
-
-// void	cleanup_pipex_child(t_pipex *pipex, char *error_msg, int exit_code);
 void	exit_child(char *error_msg, char *arg, int exit_code);
 void	cleanup_pipex_parent(t_pipex *pipex, int exit_code);
 void	exit_setup(char *error_msg, char *error_msg1, int exit_code);
 void	free_array(char **to_free);
+void	close_pipes(int pipe_in, int pipe_out);
 
 void	pipe_child(t_command_data *cmd, char **envp);
-
-// void	firstborn(t_pipex *pipex);
-// void	baby(t_pipex *pipex);
-
-//for testing
-int		run_test(int argc, char **argv, char **envp);
 
 #endif
