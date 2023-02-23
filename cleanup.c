@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:01 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/22 17:25:16 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/23 17:21:52 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,13 @@ void	free_array(char **to_free)
 	free(to_free);
 }
 
-// void	exit_child(char *error_msg, char *arg, int exit_code)
-// {
-// 	ft_putendl_fd("child exit", 2);//
-// 	ft_putstr_fd("pipex: ", 2);
-// 	ft_putstr_fd(error_msg, 2);
-// 	ft_putendl_fd(arg, 2);
-// 	// if (exit_code)
-// 	exit(exit_code);
-// }
+void	exit_child(char *error_msg, char *arg, int exit_code)
+{
+	ft_putstr_fd("pipex: ", 2);
+	ft_putstr_fd(error_msg, 2);
+	ft_putendl_fd(arg, 2);
+	exit(exit_code);
+}
 
 void	cleanup_pipex_parent(t_pipex *pipex, int exit_code)
 {
@@ -57,11 +55,14 @@ void	cleanup_pipex_parent(t_pipex *pipex, int exit_code)
 		free_array(pipex->cmd_2->cmd);
 	if (pipex->cmd_2->path)
 		free(pipex->cmd_2->path);
-	// close(pipex->infile_fd);
-	// close(pipex->outfile_fd);
-	close(pipex->p[0]);
-	close(pipex->p[1]);
+	close_pipes(pipex->p[0], pipex->p[1]);
 	exit(exit_code);
+}
+
+void	close_pipes(int pipe_in, int pipe_out)
+{
+	close(pipe_in);
+	close(pipe_out);
 }
 
 void	exit_setup(char *error_msg, char *error_msg1, int exit_code)
