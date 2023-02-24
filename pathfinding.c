@@ -6,13 +6,16 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 09:24:45 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/23 17:25:52 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/24 15:01:31 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include "libft.h"
 
+/*get_paths takes in the environment variable array and returns an array of 
+ *paths from the PATHS variable in the environment
+ */
 char	**get_paths(char **envp)
 {
 	int		i;
@@ -28,6 +31,10 @@ char	**get_paths(char **envp)
 	return (paths);
 }
 
+/*find_correct_path takes in a program name and an array of paths from the 
+ *environment and returns the path to the program if it exists in 
+ *one of the paths, if it doesn't exist it will return NULL
+ */
 char	*find_correct_path(char *fname, char **paths)
 {
 	int		i;

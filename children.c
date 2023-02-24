@@ -6,15 +6,28 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:45 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/23 14:10:34 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/24 15:20:18 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include "libft.h"
-#include "ft_printf.h"
-#include <errno.h>
 
+/*bail_on_child is called by the child process if the command is not found.
+ * It will exit with an error code.
+ */
+static void	bail_on_child(t_command_data *cmd)
+{
+	if (cmd->cmd == NULL)
+		exit_child("command not found: ", " ", 3);
+	else
+		exit_child("command not found: ", cmd->cmd[0], 3);
+}
+
+/* pipe_child is called by child processes. It will dup2 the read and write
+ * file descriptors to the correct file descriptors, close the file descriptors
+ * that are not needed, and then execve the command. If the command is not
+ * found, it will exit with an error code.
+ */
 void	pipe_child(t_command_data *cmd, char **envp)
 {
 	int		ret;
@@ -30,7 +43,7 @@ void	pipe_child(t_command_data *cmd, char **envp)
 	close(cmd->write_to);
 	close(cmd->to_close);
 	if (cmd->path == NULL)
-		exit_child("command not found: ", cmd->cmd[0], 3);
+		bail_on_child(cmd);
 	else if (cmd->read_from < 0)
 		exit(1);
 	ret = execve(cmd->path, cmd->cmd, envp);
