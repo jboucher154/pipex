@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:01 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/24 15:18:32 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/28 12:49:51 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,12 @@ void	cleanup_pipex_parent(t_pipex *pipex, int exit_code)
 		free_array(pipex->cmd_2->cmd);
 	if (pipex->cmd_2->path)
 		free(pipex->cmd_2->path);
+	close_pipes(pipex->cmd_1->read_from, pipex->cmd_2->write_to);
+	close_pipes(pipex->p[0], pipex->p[1]);
 	if (pipex->cmd_1)
 		free(pipex->cmd_1);
 	if (pipex->cmd_2)
 		free(pipex->cmd_2);
-	close_pipes(pipex->cmd_1->read_from, pipex->cmd_2->write_to);
-	close_pipes(pipex->p[0], pipex->p[1]);
 	exit(exit_code);
 }
 
