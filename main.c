@@ -6,35 +6,13 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/24 15:12:02 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/02/28 16:40:51 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 #include <fcntl.h>
 #include "libft.h"
-
-/* this_is_awkward is the function that handles the single quotes in the 
- * commands. It takes the commands as a string argument and splits the commands
- * into	an array of arguments, then copies them into malloced arrays. It assumes 
- * that there are only two arguments
- */
-static char	**this_is_awkward(char *commands)
-{
-	char	**awk_args;
-	char	**args;
-
-	awk_args = (char **)malloc(sizeof(char *) * 3);
-	args = ft_split(commands, '\'');
-	if (awk_args && args && args[0] && args[1])
-	{
-		awk_args[2] = NULL;
-		awk_args[0] = ft_strtrim(args[0], " ");
-		awk_args[1] = ft_strdup(args[1]);
-	}
-	free_array(args);
-	return (awk_args);
-}
 
 /* get_args is the function that gets the arguments for the commands. It takes
  * the commands as a string argument. It then checks if there are any single 
@@ -64,11 +42,21 @@ static char	**get_args(char *commands)
 static void	setup_commands(t_pipex *pipex, char **paths)
 {
 	if (pipex->cmd_1->cmd != NULL)
-		pipex->cmd_1->path = find_correct_path(pipex->cmd_1->cmd[0], paths);
+	{
+		if (access(pipex->cmd_1->cmd[0], X_OK) == 0)
+			pipex->cmd_1->path = ft_strdup(pipex->cmd_1->cmd[0]);
+		else
+			pipex->cmd_1->path = find_correct_path(pipex->cmd_1->cmd[0], paths);
+	}
 	pipex->cmd_1->write_to = pipex->p[1];
 	pipex->cmd_1->to_close = pipex->p[0];
 	if (pipex->cmd_2->cmd != NULL)
-		pipex->cmd_2->path = find_correct_path(pipex->cmd_2->cmd[0], paths);
+	{
+		if (access(pipex->cmd_2->cmd[0], X_OK) == 0)
+			pipex->cmd_2->path = ft_strdup(pipex->cmd_2->cmd[0]);
+		else
+			pipex->cmd_2->path = find_correct_path(pipex->cmd_2->cmd[0], paths);
+	}
 	if (pipex->cmd_1->cmd == NULL)
 		pipex->cmd_2->read_from = pipex->cmd_1->read_from;
 	else
@@ -111,7 +99,9 @@ int	main(int argc, char **argv, char **envp)
 	t_pipex	pipex;
 	int		pid;
 	int		pid2;
+	int		exit_status;
 
+	exit_status = 0;
 	if (argc < 5 || argc > 5)
 		setup_error("Input error: Enter 4 arguments", INPUT_ERROR, &pipex);
 	setup_pipex(&pipex, argv, envp);
@@ -128,7 +118,7 @@ int	main(int argc, char **argv, char **envp)
 			close_pipes(pipex.p[0], pipex.p[1]);
 	}
 	waitpid(pid, NULL, 0);
-	waitpid(pid2, NULL, 0);
-	cleanup_pipex_parent(&pipex, 0);
+	waitpid(pid2, &exit_status, 0);
+	cleanup_pipex_parent(&pipex, exit_status);
 	return (0);
 }
