@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:18 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/28 12:39:41 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/03/02 14:34:00 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@
 
 # ifndef INPUT_ERROR
 #  define INPUT_ERROR 1
+# endif
+
+# ifndef CMD_ERROR
+#  define CMD_ERROR 127
 # endif
 
 typedef struct s_command_data

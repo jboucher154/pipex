@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 12:49:45 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/24 15:20:18 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/03/02 14:34:05 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 static void	bail_on_child(t_command_data *cmd)
 {
 	if (cmd->cmd == NULL)
-		exit_child("command not found: ", " ", 3);
+		exit_child("command not found: ", " ", CMD_ERROR);
 	else
-		exit_child("command not found: ", cmd->cmd[0], 3);
+		exit_child("command not found: ", cmd->cmd[0], CMD_ERROR);
 }
 
 /* pipe_child is called by child processes. It will dup2 the read and write
