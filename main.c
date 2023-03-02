@@ -6,7 +6,7 @@
 /*   By: jebouche <jebouche@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 15:39:42 by jebouche          #+#    #+#             */
-/*   Updated: 2023/02/28 16:40:51 by jebouche         ###   ########.fr       */
+/*   Updated: 2023/03/02 10:57:55 by jebouche         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,11 @@ static void	setup_pipex(t_pipex *pipex, char **argv, char **envp)
 	free_array(paths);
 }
 
+/* main is the function takes the command line arguments argc, argv, and envp.
+ * It exits if the argc != 5. It sends the parsed commands from setup_pipex 
+ * to the pipe_child function, forking each time. The parent process waits 
+ * for child processes, then is sent to free memory and exit.
+ */
 int	main(int argc, char **argv, char **envp)
 {
 	t_pipex	pipex;
